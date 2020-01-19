@@ -1,0 +1,13 @@
+diff --git a/unix/tkUnixRFont.c b/unix/tkUnixRFont.c
+index fd0b556..ae681c9 100644
+--- a/unix/tkUnixRFont.c
++++ b/unix/tkUnixRFont.c
+@@ -226,7 +226,7 @@ InitFont(
+      */
+ 
+     set = FcFontSort(0, pattern, FcTrue, NULL, &result);
+-    if (!set) {
++    if (!set || set->nfont == 0) {
+ 	ckfree((char *)fontPtr);
+ 	return NULL;
+     }

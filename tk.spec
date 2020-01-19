@@ -4,7 +4,7 @@
 Summary: The graphical toolkit for the Tcl scripting language
 Name: tk
 Version: %{vers}
-Release: 2%{?dist}
+Release: 6%{?dist}
 Epoch:   1
 License: TCL
 Group: Development/Languages
@@ -12,6 +12,8 @@ URL: http://tcl.sourceforge.net
 Source0: http://download.sourceforge.net/sourceforge/tcl/%{name}%{version}-src.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: tcl = %{epoch}:%{version}
+# require threaded TCL
+Requires: tcl >= 1:8.5.13-5
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires: tcl-devel = %{epoch}:%{version}, autoconf
@@ -27,6 +29,7 @@ Patch2: tk-8.5.10-conf.patch
 Patch3: tk-seg_input.patch
 # fix implicit linkage of freetype that breaks xft detection (#677692)
 Patch4: tk-8.5.9-fix-xft.patch
+Patch5: tk-8.5.13-no-fonts-fix.patch
 
 %description
 When paired with the Tcl scripting language, Tk provides a fast and powerful
@@ -52,11 +55,12 @@ The package contains the development files and man pages for tk.
 %patch2 -p1 -b .conf
 %patch3 -p1 -b .seg
 %patch4 -p1 -b .fix-xft
+%patch5 -p1 -b .no-fonts-fix
 
 %build
 cd unix
 autoconf
-%configure
+%configure --enable-threads
 make %{?_smp_mflags} TK_LIBRARY=%{_datadir}/%{name}%{majorver}
 
 %check
@@ -119,6 +123,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}%{majorver}/tkAppInit.c
 
 %changelog
+* Thu Jul 16 2015 Jaroslav Škarvada <jskarvad@redhat.com> - 1:8.5.13-6
+- Added requirement for threaded TCL
+  Related: rhbz#676880
+
+* Mon Jul  6 2015 Jaroslav Škarvada <jskarvad@redhat.com> - 1:8.5.13-5
+- Enabled threading
+  Resolves: rhbz#676880
+- Fixed crash if there are no fonts installed (by no-fonts-fix patch)
+  Resolves: rhbz#1218943
+
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1:8.5.13-4
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1:8.5.13-3
+- Mass rebuild 2013-12-27
+
 * Fri Feb 15 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:8.5.13-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
